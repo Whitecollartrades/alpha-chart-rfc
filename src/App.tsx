@@ -1,9 +1,9 @@
+// src/App.tsx
 import { useState, useEffect, useRef } from 'react';
 import {
   ChartCanvas,
   Chart,
   CandlestickSeries,
-  LineSeries,
   XAxis,
   YAxis,
   CrossHairCursor,
@@ -25,9 +25,9 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [darkMode, setDarkMode] = useState(true);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(0);
+  const [width, setWidth] = useState(800);
 
   useEffect(() => {
     if (apiKey) localStorage.setItem('av_key', apiKey);
@@ -90,7 +90,6 @@ function App() {
               </button>
             </div>
           </div>
-          {/* Controls */}
           <div className="bg-gray-800 dark:bg-gray-800 bg-white p-4 rounded-lg mb-4 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -140,23 +139,18 @@ function App() {
     );
   }
 
-  const rsiCalculator = rsi().options({ windowSize: 14 }).accessor((d: any) => d.rsi).stroke('purple');
+  const rsiCalculator = rsi().options({ windowSize: 14 }).accessor((d: any) => d.rsi);
   const calculatedData = rsiCalculator(data);
 
   const ScaleProvider = discontinuousTimeScaleProviderBuilder().inputDateAccessor((d: Candle) => d.date);
   const { data: chartData, xScale, xAccessor, displayXAccessor } = ScaleProvider(calculatedData);
 
-  const pricesDisplayFormat = (d: number) => d.toFixed(2);
-  const timeDisplayFormat = 'HH:mm';
-
   const gridColor = darkMode ? '#374151' : '#e5e7eb';
   const axisColor = darkMode ? '#9ca3af' : '#6b7280';
-  const textColor = darkMode ? '#d1d5db' : '#374151';
 
   return (
     <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-white text-gray-900'} p-4`}>
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">AlphaChart RFC</h1>
           <div className="flex items-center gap-4">
@@ -174,7 +168,6 @@ function App() {
           </div>
         </div>
 
-        {/* Controls */}
         <div className="bg-gray-800 dark:bg-gray-800 bg-white p-4 rounded-lg mb-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -214,7 +207,6 @@ function App() {
               </select>
             </div>
           </div>
-
           {error && (
             <div className="text-red-400 text-sm">
               {error.includes('call frequency') ? (
@@ -226,47 +218,40 @@ function App() {
           )}
         </div>
 
-        {/* Chart */}
         <div ref={containerRef} className="bg-gray-800 dark:bg-gray-800 bg-white rounded-lg overflow-hidden">
           <ChartCanvas
             height={600}
             ratio={1}
             width={width}
             margin={{ left: 50, right: 60, top: 10, bottom: 30 }}
-            data={chartData}
             seriesName={symbol}
+            data={chartData}
             xScale={xScale}
             xAccessor={xAccessor}
             displayXAccessor={displayXAccessor}
-            xExtents={[xAccessor(lastVisibleItemBasedZoomAnchor({ xAccessor, data: chartData, xScale }) - 50), xAccessor(chartData[chartData.length - 1])]}
             zoomAnchor={lastVisibleItemBasedZoomAnchor}
           >
-            {/* Price Chart */}
             <Chart id={1} yExtents={(d: Candle) => [d.high, d.low]}>
-              <XAxis axisAt="bottom" orient="bottom" strokeStyle={axisColor} tickStrokeStyle={textColor} />
-              <YAxis axisAt="right" orient="right" strokeStyle={axisColor} tickStrokeStyle={textColor} ticks={5} />
-              <MouseCoordinateX displayFormat={timeDisplayFormat} />
-              <MouseCoordinateY at="right" orient="right" displayFormat={pricesDisplayFormat} />
-              <CandlestickSeries wickStroke={(d: any) => d.close > d.open ? "#22c55e" : "#ef4444"} fill={(d: any) => d.close > d.open ? "#22c55e" : "#ef4444"} />
-              <XAxis showGridlines gridLinesStrokeStyle={gridColor} />
-              <YAxis showGridlines gridLinesStrokeStyle={gridColor} />
+              <XAxis showGridLines strokeStyle={gridColor} tickStrokeStyle={axisColor} />
+              <YAxis showGridLines strokeStyle={gridColor} tickStrokeStyle={axisColor} ticks={5} />
+              <MouseCoordinateX displayFormat={(d) => new Date(d).toLocaleTimeString()} />
+              <MouseCoordinateY at="right" orient="right" displayFormat={(d) => d.toFixed(2)} />
+              <CandlestickSeries
+                wickStroke={(d: any) => (d.close > d.open ? '#22c55e' : '#ef4444')}
+                fill={(d: any) => (d.close > d.open ? '#22c55e' : '#ef4444')}
+              />
             </Chart>
 
-            {/* RSI Chart */}
-            <Chart id={2} origin={(w, h) => [0, h - 150]} height={150} yExtents={[0, 100]}>
-              <XAxis axisAt="bottom" orient="bottom" strokeStyle={axisColor} tickStrokeStyle={textColor} />
-              <YAxis axisAt="right" orient="right" strokeStyle={axisColor} tickStrokeStyle={textColor} ticks={5} />
-              <MouseCoordinateY at="right" orient="right" displayFormat={pricesDisplayFormat} />
-              <RSISeries yAccessor={rsiCalculator.accessor()} strokeStyle={rsiCalculator.stroke()} />
-              <XAxis showGridlines gridLinesStrokeStyle={gridColor} />
-              <YAxis showGridlines gridLinesStrokeStyle={gridColor} />
+            <Chart id={2} height={150} origin={[0, 450]} yExtents={[0, 100]}>
+              <XAxis showGridLines strokeStyle={gridColor} tickStrokeStyle={axisColor} />
+              <YAxis showGridLines strokeStyle={gridColor} tickStrokeStyle={axisColor} ticks={5} />
+              <RSISeries yAccessor={rsiCalculator.accessor()} strokeStyle="#a855f7" />
             </Chart>
 
             <CrossHairCursor strokeStyle="#ffffff" />
           </ChartCanvas>
         </div>
 
-        {/* Footer */}
         <div className="mt-4 text-center text-xs text-gray-500">
           Data by Alpha Vantage • Not financial advice • Demo key limited to 25 requests/day
         </div>
