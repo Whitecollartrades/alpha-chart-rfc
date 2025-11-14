@@ -247,17 +247,7 @@ function App() {
             <Chart id={2} height={150} origin={[0, 450]} yExtents={[0, 100]}>
               <XAxis showGridLines strokeStyle={gridColor} tickStrokeStyle={axisColor} />
               <YAxis showGridLines strokeStyle={gridColor} tickStrokeStyle={axisColor} ticks={5} />
-              <RSISeries
-                yAccessor={rsiCalculator.accessor()}
-                stroke={{
-                  line: '#a855f7',
-                  top: '#a855f7',
-                  middle: '#a855f7',
-                  bottom: '#a855f7',
-                  outsideThreshold: '#a855f7',
-                  insideThreshold: '#a855f7',
-                }}
-              />
+              <RSISeries yAccessor={rsiCalculator.accessor()} />
             </Chart>
 
             <CrossHairCursor strokeStyle="#ffffff" />
