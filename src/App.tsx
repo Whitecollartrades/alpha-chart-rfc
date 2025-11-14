@@ -25,7 +25,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [darkMode, setDarkMode] = useState(true);
-  const intervalRef = useRef<number | null>(null);useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(800);
 
@@ -63,10 +63,10 @@ function App() {
   useEffect(() => {
     if (apiKey && symbol) {
       loadData();
-      intervalRef.current = setInterval(loadData, 15000);
+      intervalRef.current = window.setInterval(loadData, 15000);
     }
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current !== null) clearInterval(intervalRef.current);
     };
   }, [apiKey, symbol, interval]);
 
@@ -90,6 +90,7 @@ function App() {
               </button>
             </div>
           </div>
+
           <div className="bg-gray-800 dark:bg-gray-800 bg-white p-4 rounded-lg mb-4 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -131,6 +132,7 @@ function App() {
             </div>
             {error && <div className="text-red-400 text-sm">{error}</div>}
           </div>
+
           <div className="h-[600px] flex items-center justify-center text-gray-400">
             {loading ? 'Loading...' : 'Enter API key and symbol'}
           </div>
@@ -245,7 +247,17 @@ function App() {
             <Chart id={2} height={150} origin={[0, 450]} yExtents={[0, 100]}>
               <XAxis showGridLines strokeStyle={gridColor} tickStrokeStyle={axisColor} />
               <YAxis showGridLines strokeStyle={gridColor} tickStrokeStyle={axisColor} ticks={5} />
-              <RSISeries    yAccessor={rsiCalculator.accessor()}    stroke={{     line: "#a855f7",     top: "#a855f7",     middle: "#a855f7",     bottom: "#a855f7",     outsideThreshold: "#a855f7",     insideThreshold: "#a855f7"   }}  />
+              <RSISeries
+                yAccessor={rsiCalculator.accessor()}
+                stroke={{
+                  line: '#a855f7',
+                  top: '#a855f7',
+                  middle: '#a855f7',
+                  bottom: '#a855f7',
+                  outsideThreshold: '#a855f7',
+                  insideThreshold: '#a855f7',
+                }}
+              />
             </Chart>
 
             <CrossHairCursor strokeStyle="#ffffff" />
