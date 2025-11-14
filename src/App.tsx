@@ -25,7 +25,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [darkMode, setDarkMode] = useState(true);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<number | null>(null);useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(800);
 
@@ -245,7 +245,7 @@ function App() {
             <Chart id={2} height={150} origin={[0, 450]} yExtents={[0, 100]}>
               <XAxis showGridLines strokeStyle={gridColor} tickStrokeStyle={axisColor} />
               <YAxis showGridLines strokeStyle={gridColor} tickStrokeStyle={axisColor} ticks={5} />
-              <RSISeries yAccessor={rsiCalculator.accessor()} stroke="#a855f7" />
+              <RSISeries    yAccessor={rsiCalculator.accessor()}    stroke={{     line: "#a855f7",     top: "#a855f7",     middle: "#a855f7",     bottom: "#a855f7",     outsideThreshold: "#a855f7",     insideThreshold: "#a855f7"   }}  />
             </Chart>
 
             <CrossHairCursor strokeStyle="#ffffff" />
