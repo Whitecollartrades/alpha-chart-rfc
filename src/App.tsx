@@ -245,7 +245,7 @@ function App() {
             <Chart id={2} height={150} origin={[0, 450]} yExtents={[0, 100]}>
               <XAxis showGridLines strokeStyle={gridColor} tickStrokeStyle={axisColor} />
               <YAxis showGridLines strokeStyle={gridColor} tickStrokeStyle={axisColor} ticks={5} />
-              <RSISeries yAccessor={rsiCalculator.accessor()} strokeStyle="#a855f7" />
+              <RSISeries yAccessor={rsiCalculator.accessor()} stroke="#a855f7" />
             </Chart>
 
             <CrossHairCursor strokeStyle="#ffffff" />
