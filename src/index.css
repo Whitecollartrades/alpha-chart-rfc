@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gray-900 text-white;
+}
+
+.dark {
+  @apply bg-gray-900 text-white;
+}
+
+.light {
+  @apply bg-white text-gray-900;
+}
+
+svg {
+  overflow: visible;
+}
